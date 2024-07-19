@@ -8,24 +8,24 @@ import Data.Bits ( shiftL, shiftR, (.|.), testBit )
 bitsRight :: Int -> B.ByteString -> B.ByteString
 
 bitsRight n
-  | 0 < n && n < 8 = B.pack . go 0 . B.unpack
+  | 0 < n && n < 8 = B.pack . go 0
   | otherwise = error "bitsRight: argument out of range 1..7"
   where
-    go y (x:xs) = ( shiftL y (8-n) .|. shiftR x n ) : go x xs
-    go _ _ = []
+    go y bs = case B.uncons bs of
+      Just (x, xs) -> ( shiftL y (8-n) .|. shiftR x n ) : go x xs
+      Nothing -> []
 
 
 
 bitsLeft :: Int -> B.ByteString -> B.ByteString
 
 bitsLeft n
-  | 0 < n && n < 8 = B.pack . start . B.unpack
+  | 0 < n && n < 8 = B.pack . maybe [] (uncurry go) . B.uncons
   | otherwise = error "bitsLeft: argument out of range 1..7"
   where
-    start (x:xs) = go x xs
-    start [] = []
-    go y (x:xs) = ( shiftL y n .|. shiftR x (8-n) ) : go x xs
-    go y [] = [shiftL y n]
+    go y bs = case B.uncons bs of
+      Just (x, xs) -> ( shiftL y n .|. shiftR x (8-n) ) : go x xs
+      Nothing -> [shiftL y n]
 
 
 
@@ -50,13 +50,14 @@ bytesLeft m bs
 shift :: Int -> B.ByteString -> B.ByteString
 
 shift d | d < 0 = f (negate d) bitsLeft bytesLeft
-        | d == 0 = id
         | d > 0 = f d bitsRight bytesRight
+        | otherwise = id
   where
     f s bits bytes = case s `divMod` 8 of
                        (m,0) -> bytes m
                        (0,n) -> bits n
                        (m,n) -> bits n . bytes m
+
 
 
 
