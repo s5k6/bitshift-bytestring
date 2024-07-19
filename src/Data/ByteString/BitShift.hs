@@ -1,7 +1,9 @@
-module Main ( main, bitsRight, bitsLeft, bytesRight, bytesLeft, shift ) where
+module Data.ByteString.BitShift (
+  bitsRight, bitsLeft, bytesRight, bytesLeft, shift
+) where
 
 import qualified Data.ByteString as B
-import Data.Bits ( shiftL, shiftR, (.|.), testBit )
+import Data.Bits ( shiftL, shiftR, (.|.) )
 
 
 
@@ -82,21 +84,3 @@ shift d
     bit-shift the entire string when combined with byte-shifting.  It
     would be sufficient to bit-shift the part of the original string
     that survives the shift, and then pad with zeros .-}
-
-
-display :: B.ByteString -> IO ()
-display =
-  putStrLn . foldr ($) "" . {-intersperse (showChar '.') .-} map f . B.unpack
-  where
-    f b = showString [ if testBit b i then '1' else '0' | i <- [7, 6 .. 0] ]
-
-
-t1 :: B.ByteString
-t1 = B.pack [255, 1, 128, 255]
-
-
-
-main :: IO ()
-
-main = do
-  mapM_ display [ shift n t1 | n <- [-33 .. 33] ]

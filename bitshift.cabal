@@ -8,7 +8,7 @@ author:              Stefan Klinger
 maintainer:          git@stefan-klinger.de
 
 category:            experimantal
-synopsis:            a toy haskell experiment
+synopsis:            bit-shifting for entire byte-strings
 
 license-file:        LICENSE
 
@@ -21,7 +21,6 @@ common shared
   default-extensions:  BangPatterns
                      , ScopedTypeVariables
                      , LambdaCase
-                    -- , OverloadedStrings
 
 common devel
   import:              shared
@@ -29,7 +28,6 @@ common devel
                        -Wwarn=deprecations
                        -Wno-orphans
                        -Wwarn=name-shadowing
-                       -dynamic
 
 common production
   import:              shared
@@ -42,24 +40,30 @@ common production
                        -Werror=unused-imports
                        -Wno-orphans
                        -Wwarn=name-shadowing
-                       -dynamic
+
+common chosen-properties
+  import: devel
 
 
 
-executable bitshift
-  import:              devel
+library
+  import:              chosen-properties
 
   hs-source-dirs:      src
-  main-is:             Main.hs
 
-  --other-modules:
+  exposed-modules:     Data.ByteString.BitShift
 
   build-depends:       base
-                    -- , attoparsec
                      , bytestring
-                    -- , containers
-                    -- , haskeline
-                    -- , parsec
-                    -- , robust-int
-                    -- , shuntingYard
-                    -- , text
+
+test-suite test
+  import:              chosen-properties
+
+  type:                exitcode-stdio-1.0
+
+  hs-source-dirs:      test
+  main-is:             Main.hs
+
+  build-depends:       base
+                     , bytestring
+                     , bitshift
