@@ -56,7 +56,7 @@ executable bitshift
 
   build-depends:       base
                     -- , attoparsec
-                    -- , bytestring
+                     , bytestring
                     -- , containers
                     -- , haskeline
                     -- , parsec
