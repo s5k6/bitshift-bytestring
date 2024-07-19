@@ -1,9 +1,7 @@
 module Main ( main ) where
 
 import qualified Data.ByteString as B
-import qualified Data.ByteString.Builder as BB
 import Data.Bits ( shiftL, shiftR, (.|.), testBit )
-import Data.List ( intersperse )
 
 
 
@@ -33,35 +31,32 @@ bitsLeft n
 
 bytesRight :: Int -> B.ByteString -> B.ByteString
 
-bytesRight n bs
-  | n < 1 = error "bytesRight: negative argument"
-  | n < B.length bs = B.replicate n 0 <> B.dropEnd n bs
+bytesRight m bs
+  | m < 1 = error "bytesRight: negative argument"
+  | m < B.length bs = B.replicate m 0 <> B.dropEnd m bs
   | otherwise = B.replicate (B.length bs) 0
 
 
 
 bytesLeft :: Int -> B.ByteString -> B.ByteString
 
-bytesLeft n bs
-  | n < 1 = error "bytesLeft: negative argument"
-  | n < B.length bs = B.drop n bs <> B.replicate n 0
+bytesLeft m bs
+  | m < 1 = error "bytesLeft: negative argument"
+  | m < B.length bs = B.drop m bs <> B.replicate m 0
   | otherwise = B.replicate (B.length bs) 0
 
 
 
 shift :: Int -> B.ByteString -> B.ByteString
 
-shift n | n > 0 = case n `divMod` 8 of
-                    (by,0) -> bytesRight by
-                    (0,bi) -> bitsRight bi
-                    (by,bi) -> bitsRight bi . bytesRight by
-
-shift n | n < 0 = case negate n `divMod` 8 of
-                    (by,0) -> bytesLeft by
-                    (0,bi) -> bitsLeft bi
-                    (by,bi) -> bitsLeft bi . bytesLeft by
-
-shift 0 = id
+shift d | d < 0 = f (negate d) bitsLeft bytesLeft
+        | d == 0 = id
+        | d > 0 = f d bitsRight bytesRight
+  where
+    f s bits bytes = case s `divMod` 8 of
+                       (m,0) -> bytes m
+                       (0,n) -> bits n
+                       (m,n) -> bits n . bytes m
 
 
 
