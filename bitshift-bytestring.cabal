@@ -1,7 +1,7 @@
 cabal-version:       3.0
 -- For further documentation, see http://haskell.org/cabal/users-guide/
 
-name:                bitshift
+name:                bitshift-bytestring
 version:             0.0.1
 
 author:              Stefan Klinger
@@ -66,4 +66,4 @@ test-suite test
 
   build-depends:       base
                      , bytestring
-                     , bitshift
+                     , bitshift-bytestring

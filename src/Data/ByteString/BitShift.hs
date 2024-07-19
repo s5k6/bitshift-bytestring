@@ -43,12 +43,14 @@ bytesRight :: Int -> B.ByteString -> B.ByteString
 
 bytesRight m
   | m < 1 = error "bytesRight: negative argument"
-  | otherwise = bytesRight_ m
+  | otherwise = bytesRight_ id m
 
-bytesRight_ :: Int -> B.ByteString -> B.ByteString
+bytesRight_
+  :: (B.ByteString -> B.ByteString) -> Int
+  -> B.ByteString -> B.ByteString
 
-bytesRight_ m bs
-  | m < B.length bs = B.replicate m 0 <> B.dropEnd m bs
+bytesRight_ f m bs
+  | m < B.length bs = B.replicate m 0 <> f (B.dropEnd m bs)
   | otherwise = B.replicate (B.length bs) 0
 
 
@@ -57,12 +59,14 @@ bytesLeft :: Int -> B.ByteString -> B.ByteString
 
 bytesLeft m
   | m < 1 = error "bytesLeft: negative argument"
-  | otherwise = bytesLeft_ m
+  | otherwise = bytesLeft_ id m
 
-bytesLeft_ :: Int -> B.ByteString -> B.ByteString
+bytesLeft_
+  :: (B.ByteString -> B.ByteString) -> Int
+  -> B.ByteString -> B.ByteString
 
-bytesLeft_ m bs
-  | m < B.length bs = B.drop m bs <> B.replicate m 0
+bytesLeft_ f m bs
+  | m < B.length bs = f (B.drop m bs) <> B.replicate m 0
   | otherwise = B.replicate (B.length bs) 0
 
 
@@ -76,11 +80,6 @@ shift d
   where
     f s bits bytes =
       case s `divMod` 8 of
-        (m,0) -> bytes m
+        (m,0) -> bytes id m
         (0,n) -> bits n
-        (m,n) -> bits n . bytes m
-
-    {- Note: This could be further optimised.  E.g., it is not necessary to
-    bit-shift the entire string when combined with byte-shifting.  It
-    would be sufficient to bit-shift the part of the original string
-    that survives the shift, and then pad with zeros .-}
+        (m,n) -> bytes (bits n) m
