@@ -24,4 +24,7 @@ t1 = B.pack [255, 1, 128, 255]
 main :: IO ()
 
 main = do
-  mapM_ display [ shift n t1 | n <- [-33 .. 33] ]
+  putStrLn ""
+  mapM_ display [ bitShift n t1 | n <- [-33 .. 33] ]
+
+  putStrLn "WARNING: Not a test yet, just a demo"
