@@ -27,4 +27,6 @@ main = do
   putStrLn ""
   mapM_ display [ bitShift n t1 | n <- [-33 .. 33] ]
 
+  mapM_ display [ bitShift n $ B.pack [] | n <- [-2 .. 2] ]
+
   putStrLn "WARNING: Not a test yet, just a demo"
