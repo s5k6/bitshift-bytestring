@@ -1,5 +1,5 @@
 module Data.ByteString.BitShift
-  ( bitsRight, bitsLeft, bytesRight, bytesLeft, I.bitShift
+  ( bitsRight, bitsLeft, bytesRight, bytesLeft, bitShift
   ) where
 
 {- The functions in this module mainly add argument range checks to some
@@ -42,3 +42,23 @@ bytesLeft m
   | m < 0 = error "bytesLeft: negative argument"
   | m == 0 = id
   | otherwise = I.bytesLeft id m
+
+
+
+{- This function provides arbitrary bit-shifts in either direction, with
+a negative argument shifting to the left, and a positive one shifting
+to the right.  A zero-shift is identity.  `bitShift` adequately
+composes bit- and byte-wise shift functions. -}
+
+bitShift :: Int -> I.ByteStringShifter
+
+bitShift d
+  | d < 0 = f (negate d) I.bitsLeft I.bytesLeft
+  | d > 0 = f d I.bitsRight I.bytesRight
+  | otherwise = id
+  where
+    f s bits bytes =
+      case s `divMod` 8 of
+        (m,0) -> bytes id m
+        (0,n) -> bits n
+        (m,n) -> bytes (bits n) m
