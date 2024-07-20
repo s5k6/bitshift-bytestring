@@ -52,7 +52,6 @@ library
   hs-source-dirs:      src
 
   exposed-modules:     Data.ByteString.BitShift
-  other-modules:       Data.ByteString.BitShift.Internal
 
   build-depends:       base
                      , bytestring
