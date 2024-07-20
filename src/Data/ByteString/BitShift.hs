@@ -30,7 +30,8 @@ bitsLeft n
 bytesRight :: Int -> I.ByteStringShifter
 
 bytesRight m
-  | m < 1 = error "bytesRight: negative argument"
+  | m < 0 = error "bytesRight: negative argument"
+  | m == 0 = id
   | otherwise = I.bytesRight id m
 
 
@@ -38,5 +39,6 @@ bytesRight m
 bytesLeft :: Int -> I.ByteStringShifter
 
 bytesLeft m
-  | m < 1 = error "bytesLeft: negative argument"
+  | m < 0 = error "bytesLeft: negative argument"
+  | m == 0 = id
   | otherwise = I.bytesLeft id m
