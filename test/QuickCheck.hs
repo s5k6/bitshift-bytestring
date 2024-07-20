@@ -169,7 +169,7 @@ prop_bytesReverseShiftCommutes :: LimitedByteCase -> Bool
 
 prop_bytesReverseShiftCommutes (LimitedByteCase n' bs) =
 
-  B.reverse (bytesRight n bs) == bytesLeft n (B.reverse bs)
+  (B.reverse . bytesRight n) bs == (bytesLeft n . B.reverse) bs
 
   where
     n = abs n'
@@ -196,18 +196,13 @@ prop_bitReverse :: B.ByteString -> Bool
 prop_bitReverse bs = (bitReverse . bitReverse) bs == bs
 
 
-{- Property: reversing commutes with shifting *bytes* modulo direction.
-This is not true for bit-wise shifts, because the individual bits are
-not turned around. -}
+{- Property: reversing commutes with shifting modulo direction. -}
 
-prop_bitsReverseShiftCommutes :: LimitedByteCase -> Bool
+prop_bitsReverseShiftCommutes :: LimitedBitCase -> Bool
 
-prop_bitsReverseShiftCommutes (LimitedByteCase n bs) =
+prop_bitsReverseShiftCommutes (LimitedBitCase n bs) =
 
   (bitReverse . bitShift n) bs == (bitShift (negate n) . bitReverse) bs
-
-
-
 
 
 
@@ -243,6 +238,7 @@ prop_fullRotationId :: SimpleCase -> Bool
 prop_fullRotationId (SimpleCase bs) =
 
   rotate (8 * B.length bs) bs == bs
+
 
 
 return [] -- this is somehow needed for template haskell

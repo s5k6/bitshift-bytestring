@@ -57,16 +57,28 @@ library
   build-depends:       base
                      , bytestring
 
-test-suite test
+test-suite quickcheck
   import:              chosen-properties
 
-  default-extensions: TemplateHaskell
+  default-extensions:  TemplateHaskell
   type:                exitcode-stdio-1.0
 
   hs-source-dirs:      test
-  main-is:             Main.hs
+  main-is:             QuickCheck.hs
 
   build-depends:       base
                      , bytestring
                      , bitshift-bytestring
                      , QuickCheck
+
+test-suite demo
+  import:              chosen-properties
+
+  type:                exitcode-stdio-1.0
+
+  hs-source-dirs:      test
+  main-is:             Demo.hs
+
+  build-depends:       base
+                     , bytestring
+                     , bitshift-bytestring
