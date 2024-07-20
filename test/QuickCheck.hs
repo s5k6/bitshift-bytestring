@@ -93,6 +93,49 @@ instance Show LimitedByteCase where
 
 
 
+{- Properties: Alignment with lower-level frontends. -}
+
+prop_bitsLeft :: Int -> SimpleCase -> Bool
+
+prop_bitsLeft n' (SimpleCase bs) =
+
+  bitsLeft n bs == bitShift (negate n) bs
+
+  where
+    n = 1 + abs n' `mod` 7
+
+
+prop_bitsRight :: Int -> SimpleCase -> Bool
+
+prop_bitsRight n' (SimpleCase bs) =
+
+  bitsRight n bs == bitShift n bs
+
+  where
+    n = 1 + abs n' `mod` 7
+
+
+prop_bytesLeft :: Int -> SimpleCase -> Bool
+
+prop_bytesLeft n' (SimpleCase bs) =
+
+  bytesLeft n bs == bitShift (8 * negate n) bs
+
+  where
+    n = abs n'
+
+
+prop_bytesRight :: Int -> SimpleCase -> Bool
+
+prop_bytesRight n' (SimpleCase bs) =
+
+  bytesRight n bs == bitShift (8 * n) bs
+
+  where
+    n = abs n'
+
+
+
 {- Property: Shifting is length-invariant. -}
 
 prop_lengthInvar :: LimitedBitCase -> Bool

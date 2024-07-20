@@ -35,4 +35,6 @@ showOneShift n = do
 
 main :: IO ()
 
-main = mapM_ showOneShift [-33 .. 33]
+main = do
+  putStrLn ""
+  mapM_ showOneShift [-33 .. 33]
