@@ -42,7 +42,7 @@ common production
                        -Wwarn=name-shadowing
 
 common chosen-properties
-  import: devel
+  import: production
 
 
 
