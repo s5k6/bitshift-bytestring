@@ -1,21 +1,16 @@
 module Data.ByteString.BitShift.Internal
-  ( ByteStringShifter
-  , bitsRight, bitsLeft, bytesRight, bytesLeft
+  ( bitsRight, bitsLeft, bytesRight, bytesLeft
   ) where
-
-{- The functions in this module do not perform range checking on the
-arguments.  They are intended for internal use. -}
 
 import qualified Data.ByteString as B
 import Data.Bits ( shiftL, shiftR, (.|.) )
 
+{- The functions in this module do not perform range checking on the
+arguments.  They are intended for internal use. -}
 
 
-type ByteStringShifter = B.ByteString -> B.ByteString
 
-
-
-bitsRight :: Int -> ByteStringShifter
+bitsRight :: Int -> B.ByteString -> B.ByteString
 
 bitsRight n = B.pack . go 0
   where
@@ -25,7 +20,7 @@ bitsRight n = B.pack . go 0
 
 
 
-bitsLeft :: Int -> ByteStringShifter
+bitsLeft :: Int -> B.ByteString -> B.ByteString
 
 bitsLeft n = B.pack . maybe [] (uncurry go) . B.uncons
   where
@@ -39,11 +34,13 @@ bitsLeft n = B.pack . maybe [] (uncurry go) . B.uncons
 byte-shifting.  It is sufficient to bit-shift the part of the original
 string that survives the shift, and then pad with zero.  To this end,
 the byte-shifting fynctions `bytesLeft` and `bytesRight` take an
-additional `ByteStringShifter` as first argument, which is applied to
-the byte string between chopping on one side and padding on the other. -}
+additional `B.ByteString -> B.ByteString` as first argument, which is
+applied to the byte string between chopping on one side and padding on
+the other. -}
 
 
-bytesRight :: ByteStringShifter -> Int -> ByteStringShifter
+bytesRight
+  :: (B.ByteString -> B.ByteString) -> Int -> B.ByteString -> B.ByteString
 
 bytesRight f m bs
   | m < B.length bs = B.replicate m 0 <> f (B.dropEnd m bs)
@@ -51,7 +48,8 @@ bytesRight f m bs
 
 
 
-bytesLeft :: ByteStringShifter -> Int -> ByteStringShifter
+bytesLeft
+  :: (B.ByteString -> B.ByteString) -> Int -> B.ByteString -> B.ByteString
 
 bytesLeft f m bs
   | m < B.length bs = f (B.drop m bs) <> B.replicate m 0

@@ -42,18 +42,9 @@ Shift two bytes to the left:
     ghci> unpack . bitShift (negate 16) $ pack [ 1, 0, 128 ]
     [128,0,0]
 
-The `bitShift` function is a frontend to the also provided functions
 
-    bitsRight  :: Int -> ByteString -> ByteString
-    bitsLeft   :: Int -> ByteString -> ByteString
-    bytesRight :: Int -> ByteString -> ByteString
-    bytesLeft  :: Int -> ByteString -> ByteString
+Generate API documentation
+--------------------------
 
-which are partial, while `bitShift` is total.
-
-The `bitShift` frontend automatically combines the specialised
-functions to perform the desired bit shift in a hopefully efficient
-way.  I.e, only the sub-byte portion of the entire shift is actually
-done by bit-fiddling, the byte-chunked portion is achieved by more
-efficient byte-oriented means.  On large shifts, only a small part of
-the input may require bit-fiddling.
+    $ stack haddock
+    $ firefox "$(stack path --local-doc-root)/all/index.html"

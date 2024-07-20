@@ -1,17 +1,24 @@
 module Data.ByteString.BitShift
-  ( bitsRight, bitsLeft, bytesRight, bytesLeft, bitShift
+  ( -- * bit-shifting entire ByteStrings
+    bitShift
+    -- * Lower level functions
+  , bitsRight, bitsLeft, bytesRight, bytesLeft
   ) where
 
-{- The functions in this module mainly add argument range checks to some
-of the internal functions.  The byte-wise shifting functions also hide
-the implementation detail of an internal shifter, see `Internal` for
-why. -}
-
 import qualified Data.ByteString.BitShift.Internal as I
+import qualified Data.ByteString as B
 
 
 
-bitsRight :: Int -> I.ByteStringShifter
+{-| @bitsRight n@ shifts a given `B.ByteString` by @n@ __bits__ to the
+right.  I.e., it performs a __non-zero sub-byte__ shift to the right.
+This needs to be combined with `bytesRight` for larger shifts.  The
+result has the same length as the original @ByteString@, the first
+byte padded with zero bits on the left.
+
+/Partial:/ @n@ must be in the range 1 ≤ @n@ ≤ 7. -}
+
+bitsRight :: Int -> B.ByteString -> B.ByteString
 
 bitsRight n
   | 0 < n && n < 8 = I.bitsRight n
@@ -19,7 +26,10 @@ bitsRight n
 
 
 
-bitsLeft :: Int -> I.ByteStringShifter
+{-| Analogous to `bitsRight`, but shifts to the left.  In particular,
+@n@ must be positive. -}
+
+bitsLeft :: Int -> B.ByteString -> B.ByteString
 
 bitsLeft n
   | 0 < n && n < 8 = I.bitsLeft n
@@ -27,7 +37,13 @@ bitsLeft n
 
 
 
-bytesRight :: Int -> I.ByteStringShifter
+{-| @bytesRight m@ shifts a given `B.ByteString` by @m@ __bytes__ to the
+right.  The result has the same length as the original @ByteString@,
+zero-padded on the left.
+
+/Partial:/ @m@ must be non-negative. -}
+
+bytesRight :: Int -> B.ByteString -> B.ByteString
 
 bytesRight m
   | m < 0 = error "bytesRight: negative argument"
@@ -36,7 +52,10 @@ bytesRight m
 
 
 
-bytesLeft :: Int -> I.ByteStringShifter
+{-| Analogous to `bytesRight`, but shifts to the left.  In particular,
+@m@ must be positive.-}
+
+bytesLeft :: Int -> B.ByteString -> B.ByteString
 
 bytesLeft m
   | m < 0 = error "bytesLeft: negative argument"
@@ -45,12 +64,45 @@ bytesLeft m
 
 
 
-{- This function provides arbitrary bit-shifts in either direction, with
-a negative argument shifting to the left, and a positive one shifting
-to the right.  A zero-shift is identity.  `bitShift` adequately
-composes bit- and byte-wise shift functions. -}
+{-| This function provides arbitrary bit-shifts in either direction, by
+adequately composing the other (partial) shifting functions in this
+module.  @bitShift@ is a total function.
 
-bitShift :: Int -> I.ByteStringShifter
+@bitShift n@ shifts a given `B.ByteString` by @n@ __bits__ to the left
+(resp. right) iff @n@ is negative (resp. positive).
+
+Bits and bytes are lost on the end shifted towards.  The other end of
+the @ByteString@ is padded with zero bits and bytes.
+
+
+=== Examples
+
+  * Shift one bit to the right:
+
+        >>> unpack . bitShift 1 $ pack [ 1, 0, 128 ]
+        [0,128,64]
+
+  * Shift three bits to the left:
+
+        >>> unpack . bitShift (negate 3) $ pack [ 1, 0, 128 ]
+        [8,4,0]
+
+  * Shift two bytes to the left:
+
+        >>> unpack . bitShift (negate 16) $ pack [ 1, 0, 128 ]
+        [128,0,0]
+
+
+=== Properties
+
+prop> bitShift 0 = id
+
+prop> signum a = signum b  =>  bitShift a . bitShift b = bitShift (a + b)
+
+prop> l = length bs, abs n ≥ 8 * l  =>  bitShift n bs = replicate l 0
+-}
+
+bitShift :: Int -> B.ByteString -> B.ByteString
 
 bitShift d
   | d < 0 = f (negate d) I.bitsLeft I.bytesLeft
