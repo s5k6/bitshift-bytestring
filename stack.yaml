@@ -4,16 +4,11 @@
 
 resolver: lts-22.0
 
-
 packages:
 
   - .
 
 
-#extra-deps:
-#
-#  - git: https://github.com/s5k6/robust-int
-#    commit: 3e3216ded51bd973cb5d6ba25dccf50445d53011
-#
-#  - git: https://github.com/s5k6/shuntingYard
-#    commit: 325753ddc3ce92ae497d1d8574e5147ec573eab8
+extra-deps:
+
+  - QuickCheck-2.15

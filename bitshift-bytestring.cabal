@@ -68,7 +68,7 @@ test-suite quickcheck
   build-depends:       base
                      , bytestring
                      , bitshift-bytestring
-                     , QuickCheck
+                     , QuickCheck >=2.15
 
 test-suite demo
   import:              chosen-properties
