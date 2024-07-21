@@ -10,16 +10,8 @@ The function
 
     bitShift :: Int -> ByteString -> ByteString
 
-from module `Data.ByteString.BitShift`, provides arbitrary bit
-shifting on byte strings.  A negative first argument shifts to the
-left, a positive one shifts to the right.
-
-The byte string is filled with null bits on the adequate end.
-
-A zero shift is identity.
-
-If the shift is at least as large as the input string is long, you'll
-get an all-zero string of the same length.
+provides arbitrary bit shifting on byte strings.  A negative first
+argument shifts to the left, a positive one shifts to the right.
 
 
 Examples
@@ -47,4 +39,4 @@ Generate API documentation
 --------------------------
 
     $ stack haddock
-    $ firefox "$(stack path --local-doc-root)/all/index.html"
+    $ firefox "$(stack path --local-doc-root)/index.html"

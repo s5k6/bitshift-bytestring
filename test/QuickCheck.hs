@@ -8,10 +8,13 @@ import Data.List ( intersperse )
 import System.Environment ( getArgs )
 import System.Exit ( exitFailure )
 import Data.Word ( Word8, Word64 )
+import Test.QuickCheck.Monadic ( assertException )
+import Control.Exception.Base ( ErrorCall )
 
 
 
 binDump :: B.ByteString -> ShowS
+
 binDump bs = foldl (.) id . intersperse (showChar '.') . map f $ B.unpack bs
   where
     f b = showString [ if testBit b i then '1' else '0' | i <- [7, 6 .. 0] ]
@@ -69,7 +72,9 @@ instance Show LimitedBitCase where
   showsPrec _ (LimitedBitCase n bs) =
     showString "LimitedBits: " . showsLimitedCase n bs
 
+
 showsLimitedCase :: Show a => a -> B.ByteString -> ShowS
+
 showsLimitedCase n bs =
   shows n . showString ": " . binDump bs
 
@@ -93,6 +98,17 @@ instance Show LimitedByteCase where
 
 
 
+{- This is only available with QuickCheck >=2.15 -}
+
+wantError :: a -> Property
+
+wantError x = assertException isError x
+  where
+    isError :: ErrorCall -> Bool
+    isError _ = True
+
+
+
 {- Properties: Alignment with lower-level frontends. -}
 
 prop_bitsLeft :: Int -> SimpleCase -> Bool
@@ -105,6 +121,13 @@ prop_bitsLeft n' (SimpleCase bs) =
     n = 1 + abs n' `mod` 7
 
 
+prop_bitsLeftError :: Int -> B.ByteString -> Property
+
+prop_bitsLeftError n bs =
+
+  n < 1 || 7 < n ==> wantError ( bitsLeft n bs `seq` True )
+
+
 prop_bitsRight :: Int -> SimpleCase -> Bool
 
 prop_bitsRight n' (SimpleCase bs) =
@@ -113,6 +136,13 @@ prop_bitsRight n' (SimpleCase bs) =
 
   where
     n = 1 + abs n' `mod` 7
+
+
+prop_bitsRightError :: Int -> B.ByteString -> Property
+
+prop_bitsRightError n bs =
+
+  n < 1 || 7 < n ==> wantError ( bitsRight n bs `seq` True )
 
 
 prop_bytesLeft :: Int -> SimpleCase -> Bool
@@ -125,6 +155,13 @@ prop_bytesLeft n' (SimpleCase bs) =
     n = abs n'
 
 
+prop_bytesLeftError :: Int -> B.ByteString -> Property
+
+prop_bytesLeftError n bs =
+
+  n < 0 ==> wantError ( bytesLeft n bs `seq` True )
+
+
 prop_bytesRight :: Int -> SimpleCase -> Bool
 
 prop_bytesRight n' (SimpleCase bs) =
@@ -133,6 +170,13 @@ prop_bytesRight n' (SimpleCase bs) =
 
   where
     n = abs n'
+
+
+prop_bytesRightError :: Int -> B.ByteString -> Property
+
+prop_bytesRightError n bs =
+
+  n < 0 ==> wantError ( bytesRight n bs `seq` True )
 
 
 
