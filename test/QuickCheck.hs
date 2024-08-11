@@ -312,7 +312,7 @@ main = do
 
 Note 1:
 
-Take from [1], which says:
+Taken from [1], which says:
 
     unsigned char b; // reverse this (8-bit) byte
     b = (b * 0x0202020202ULL & 0x010884422010ULL) % 1023;

@@ -106,7 +106,7 @@ bytesRight m
 
 
 {-| Analogous to `bytesRight`, but shifts to the left.  In particular,
-@m@ must be positive.-}
+@m@ must be non-negative.-}
 
 bytesLeft :: Int -> B.ByteString -> B.ByteString
 

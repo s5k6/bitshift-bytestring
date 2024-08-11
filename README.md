@@ -2,10 +2,6 @@
 Bit-shifting for entire ByteStrings
 ===================================
 
-    $ stack build
-
-    $ stack test
-
 The function
 
     bitShift :: Int -> ByteString -> ByteString
@@ -43,8 +39,8 @@ Shift two bytes to the left:
     [128,0,0]
 
 
-Generate API documentation
---------------------------
+API Documentation
+-----------------
 
     $ stack haddock
-    $ firefox "$(stack path --local-doc-root)/all/index.html"
+    $ firefox "$(stack path --local-doc-root)/index.html"

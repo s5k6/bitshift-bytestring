@@ -1,29 +1,42 @@
 cabal-version:       3.0
--- For further documentation, see http://haskell.org/cabal/users-guide/
 
 name:                bitshift-bytestring
-version:             0.0.1
+version:             1.0.0
 
-author:              Stefan Klinger
-maintainer:          git@stefan-klinger.de
+synopsis: bit-shifting for entire byte-strings
 
-category:            experimantal
-synopsis:            bit-shifting for entire byte-strings
+description: Extends bit-shifting from basic types (e.g., values of
+  type `Word`) the entire byte strings (i.e., values of type
+  `Data.ByteString.ByteString`).
 
+category:            Data
+
+license:             AGPL-3.0-or-later
 license-file:        LICENSE
+author:              Stefan Klinger <https://stefan-klinger.de/>
+maintainer:          git@stefan-klinger.de
+copyright:           © 2024 Stefan Klinger
 
-extra-source-files:  README.md
+package-url:         https://github.com/s5k6/bitshift-bytestring
+
+extra-source-files:  stack.yaml, stack.yaml.lock
+                   , README.md
 
 
 
 common shared
   default-language:    Haskell2010
+
   default-extensions:  BangPatterns
                      , ScopedTypeVariables
                      , LambdaCase
 
+  build-depends:       base >=4.18 && <4.19
+                     , bytestring
+
 common devel
   import:              shared
+
   ghc-options:         -Wall
                        -Wwarn=deprecations
                        -Wno-orphans
@@ -31,8 +44,8 @@ common devel
 
 common production
   import:              shared
+
   ghc-options:         -Wall
-                       -Werror
                        -Wwarn=missing-local-signatures
                        -Wwarn=missing-export-lists
                        -Wwarn=unused-top-binds
@@ -53,8 +66,6 @@ library
 
   exposed-modules:     Data.ByteString.BitShift
 
-  build-depends:       base
-                     , bytestring
 
 test-suite quickcheck
   import:              chosen-properties
@@ -65,10 +76,9 @@ test-suite quickcheck
   hs-source-dirs:      test
   main-is:             QuickCheck.hs
 
-  build-depends:       base
-                     , bytestring
-                     , bitshift-bytestring
+  build-depends:       bitshift-bytestring
                      , QuickCheck
+
 
 test-suite demo
   import:              chosen-properties
@@ -78,6 +88,4 @@ test-suite demo
   hs-source-dirs:      test
   main-is:             Demo.hs
 
-  build-depends:       base
-                     , bytestring
-                     , bitshift-bytestring
+  build-depends:       bitshift-bytestring
